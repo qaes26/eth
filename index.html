@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار التربية الوطنية | إعداد قيس جازي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .option-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .correct-answer {
+            background-color: #d1fae5 !important;
+            border-color: #10b981 !important;
+            color: #065f46 !important;
+        }
+        .wrong-answer {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+        .disabled-option {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-indigo-700">اختبار التربية الوطنية</h1>
+            <span class="text-sm font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">من إعداد: قيس جازي</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div id="app-container" class="bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden relative">
+            
+            <!-- Start Screen -->
+            <div id="start-screen" class="p-8 text-center flex flex-col items-center justify-center min-h-[400px]">
+                <div class="bg-indigo-100 p-4 rounded-full mb-6">
+                    <svg class="w-12 h-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                </div>
+                <h2 class="text-3xl font-bold mb-4 text-gray-800">اختبار المحاور الثلاثة الأولى</h2>
+                <p class="text-gray-600 mb-8 max-w-md">يحتوي هذا الاختبار على 50 سؤالاً شاملاً تغطي المفاهيم الأساسية، الأوراق النقاشية، ونشأة الدولة الأردنية.</p>
+                <button onclick="startQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl w-full sm:w-auto transition duration-300 shadow-md">
+                    ابدأ الاختبار الآن
+                </button>
+            </div>
+
+            <!-- Quiz Screen -->
+            <div id="quiz-screen" class="hidden flex flex-col min-h-[500px]">
+                <!-- Progress Bar -->
+                <div class="bg-gray-200 h-2 w-full">
+                    <div id="progress-bar" class="bg-indigo-600 h-2 transition-all duration-300" style="width: 0%"></div>
+                </div>
+                
+                <div class="p-6 sm:p-8 flex-grow">
+                    <div class="flex justify-between items-center mb-6">
+                        <span id="question-counter" class="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">السؤال 1 من 50</span>
+                        <span id="score-display" class="text-sm font-bold text-gray-500">النقاط: 0</span>
+                    </div>
+
+                    <h3 id="question-text" class="text-xl sm:text-2xl font-bold mb-6 leading-relaxed text-gray-800"></h3>
+                    
+                    <div id="options-container" class="space-y-3">
+                        <!-- Options will be injected here -->
+                    </div>
+
+                    <!-- Explanation Box -->
+                    <div id="explanation-box" class="hidden mt-6 p-4 rounded-xl border-l-4">
+                        <p id="explanation-text" class="text-sm sm:text-base font-medium"></p>
+                    </div>
+                </div>
+
+                <!-- Footer area of quiz screen -->
+                <div class="p-4 sm:p-6 bg-gray-50 border-t border-gray-100 flex justify-end">
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl transition duration-300 shadow-md w-full sm:w-auto">
+                        السؤال التالي
+                    </button>
+                </div>
+            </div>
+
+            <!-- Result Screen -->
+            <div id="result-screen" class="hidden p-8 text-center flex flex-col items-center justify-center min-h-[500px]">
+                <div id="result-icon" class="mb-6"></div>
+                <h2 class="text-3xl font-bold mb-2 text-gray-800">النتيجة النهائية</h2>
+                <p id="result-message" class="text-lg text-gray-600 mb-6"></p>
+                
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 w-full max-w-sm mb-8 shadow-inner">
+                    <div class="text-5xl font-extrabold text-indigo-600 mb-2" id="final-score"></div>
+                    <div class="text-gray-500 font-medium text-sm">من أصل 50 نقطة</div>
+                </div>
+
+                <button onclick="restartQuiz()" class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-8 rounded-xl w-full sm:w-auto transition duration-300 shadow-md">
+                    إعادة الاختبار
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 text-center text-sm">
+        <p>تصميم وبرمجة خاصة - جميع الحقوق محفوظة &copy; 2026</p>
+        <p class="mt-1 text-indigo-300 font-bold text-base">تم الإعداد والمراجعة بواسطة: قيس جازي</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "ما هو المفهوم الذي يعبر عن الانتساب والارتباط الحقيقي المخلص الصادق للوطن فكراً وقولاً؟", options: ["الولاء", "الانتماء", "الهوية الوطنية", "المواطنة"], answer: 1, explanation: "الانتماء اصطلاحاً هو الارتباط الحقيقي والمخلص للوطن وهو مرتبط بالأرض." },
+            { q: "بأي شيء يرتبط مفهوم (الولاء) بشكل أساسي حسب التلخيص؟", options: ["الوطن (الأرض)", "الحاكم (ولي الأمر)", "الدستور", "الأحزاب السياسية"], answer: 1, explanation: "الولاء يرتبط بمن خضع لسلطة ما كالحاكم أو شيخ العشيرة." },
+            { q: "أي من الخيارات التالية يُعد من المصلحة الوطنية (العليا) للدولة؟", options: ["توفير فرص العمل", "توفير التأمينات الاجتماعية", "الأمن والبقاء والهيبة", "التعليم للمواطن"], answer: 2, explanation: "الأمن والبقاء واستمرار النظام السياسي هي في قمة المصالح الوطنية العليا." },
+            { q: "من يصدر (القانون) في الدولة الأردنية حسب التسلسل التشريعي؟", options: ["السلطة التنفيذية", "السلطة القضائية", "السلطة التشريعية (مجلس الأمة)", "ديوان التشريع والرأي"], answer: 2, explanation: "القانون تقره السلطة التشريعية المتمثلة بمجلس الأمة (الأعيان والنواب)." },
+            { q: "ما هي الوثيقة التي تُبين شكل الدولة وطبيعة نظام الحكم وتُعد القانون الأسمى للدولة؟", options: ["النظام", "القانون", "الدستور", "الميثاق الوطني"], answer: 2, explanation: "الدستور هو الوثيقة الأعلى مرتبة التي تنظم شكل الدولة وعلاقتها بالأفراد." },
+            { q: "ما هو الموضوع الرئيسي الذي ركزت عليه الورقة النقاشية (الأولى) لجلالة الملك عبدالله الثاني؟", options: ["الحكومات البرلمانية", "مسيرتنا نحو بناء الديمقراطية المتجددة (الحوار والتحول)", "التمكين الديمقراطي والمواطنة الفاعلة", "سيادة القانون والدولة المدنية"], answer: 1, explanation: "الورقة الأولى ركزت على الحوار وقبول الاختلاف كجزء من التحول الديمقراطي." },
+            { q: "في أي ورقة نقاشية تناول جلالة الملك موضوع (الحكومات البرلمانية) الفاعلة؟", options: ["الورقة الثانية", "الورقة الثالثة", "الورقة الخامسة", "الورقة السابعة"], answer: 0, explanation: "الورقة الثانية ركزت على تطوير النظام الديمقراطي عبر الانتقال لحكومات برلمانية." },
+            { q: "ما هو المصطلح الذي يُطلق على المعارضة النيابية التي تمثل الأقلية وتنافس الحكومة بشكل بناء؟", options: ["الحكومة المركزية", "حكومة الظل", "الحكومة البرلمانية", "السلطة التشريعية"], answer: 1, explanation: "حكومة الظل هي المعارضة التي تطرح رؤى وبرامج بديلة وتنافس للوصول للسلطة." },
+            { q: "وفقاً لقانون الأحزاب الأردني، لا يجوز تأسيس الحزب على أي من الأسس التالية؟", options: ["المواطنة والمساواة", "الأساس الديني أو الطائفي أو العرقي", "البرامج الاقتصادية", "العمل بالوسائل المشروعة"], answer: 1, explanation: "يُمنع تأسيس الأحزاب على أسس تمييزية دينية أو عرقية أو طائفية." },
+            { q: "أي من الخيارات التالية يُعد من محطات (الإنجاز المؤسسي) التي جاءت في الورقة النقاشية الخامسة؟", options: ["قانون الأحزاب السياسية", "إنشاء محكمة دستورية وهيئة مستقلة للانتخاب", "تعديل قانون محكمة أمن الدولة", "احترام الرأي والرأي الآخر"], answer: 1, explanation: "إنشاء هذه الهيئات يُعد تطويراً مؤسسياً لتعزيز الديمقراطية." },
+            { q: "ما هي الورقة النقاشية التي وصف فيها جلالة الملك (الدولة المدنية) بأنها دولة تحتكم إلى الدستور والقوانين؟", options: ["الورقة الأولى", "الورقة الرابعة", "الورقة السادسة", "الورقة السابعة"], answer: 2, explanation: "في الورقة السادسة، أكد الملك على سيادة القانون وقدم تعريفاً واضحاً للدولة المدنية." },
+            { q: "تُصنف المشاركة في الاقتراع والترشح للانتخابات ضمن أي نوع من الحقوق؟", options: ["الحقوق الاقتصادية", "الحقوق الاجتماعية", "الحقوق السياسية", "الحقوق القانونية"], answer: 2, explanation: "حق الاقتراع والترشح وتولي المناصب العامة هي من صميم الحقوق السياسية." },
+            { q: "متى تم تأسيس المركز الوطني لحقوق الإنسان في الأردن كإحدى الضمانات المؤسسية؟", options: ["عام 1999", "عام 2002", "عام 2006", "عام 2011"], answer: 1, explanation: "تم تأسيس المركز الوطني لحقوق الإنسان عام 2002." },
+            { q: "ما هو التعريف الدقيق لـ (العدالة الإجرائية)؟", options: ["إقامة مجتمع عادل ومنصف ومتوازن اقتصادياً", "تماثل أفراد المجتمع جميعاً أمام القانون", "تتعلق بقواعد الإجراءات التي تتضمن المحاكمات العادلة", "الاعتراف بحقوق الأفراد وحمايتها قانونياً"], answer: 2, explanation: "العدالة الإجرائية تختص بسلامة وعدالة الإجراءات القانونية والمحاكمات." },
+            { q: "حسب الورقة النقاشية السادسة، ما هي السلوكيات التي وصفها الملك بأنها (تفتك بالمسيرة التنموية)؟", options: ["الواسطة والمحسوبية", "الاعتماد على المؤسسات الدولية", "التعددية السياسية", "توسيع قاعدة المشاركة"], answer: 0, explanation: "أكد الملك أن الواسطة والمحسوبية تدمر العدالة وتعيق سيادة القانون." },
+            { q: "أي من الخيارات التالية يُعد من أنماط المشاركة السياسية (غير السليمة / العنيفة)؟", options: ["عقد الندوات", "العصيان المدني", "الانضمام للأحزاب", "المناقشات السياسية"], answer: 1, explanation: "يُصنف العصيان المدني والتمرد كأنماط غير عادية وعنيفة للمشاركة السياسية." },
+            { q: "ما هي السلطة العليا المسؤولة عن تطبيق القانون وحفظ الحقوق في (الدولة المدنية)؟", options: ["الأحزاب السياسية", "النقابات المهنية", "الحكومة", "مجلس النواب"], answer: 2, explanation: "الحكومة (الهيئة السياسية) هي السلطة العليا المسؤولة عن تطبيق القانون." },
+            { q: "إلى ماذا يعود أصل كلمة (الأردن) لغوياً وفقاً للملخص؟", options: ["كلمة رومانية تعني الأرض الخصبة", "كلمة آرامية تعني الشدة والغلبة أو الانحدار", "كلمة نبطية تعني القوة", "كلمة كنعانية تعني النهر الصغير"], answer: 1, explanation: "كلمة الأردن آرامية وكانت تطلق على نهر الأردن شديد الانحدار." },
+            { q: "أي من الدول العربية التالية (لا) تمتلك حدوداً مشتركة مع المملكة الأردنية الهاشمية؟", options: ["سوريا", "لبنان", "العراق", "السعودية"], answer: 1, explanation: "لبنان هي الدولة العربية الوحيدة في الشام التي لا حدود مشتركة لها مع الأردن." },
+            { q: "ما هي المنطقة الجغرافية التي تشكل أكبر مساحة في الأردن؟", options: ["الأغوار", "منطقة الهضاب الداخلية", "المنطقة الجبلية", "منطقة البادية"], answer: 3, explanation: "البادية تشكل حوالي ثلاثة أرباع مساحة الأردن وتتركز في الشرق." },
+            { q: "ما هو التحالف الروماني الذي أُنشئ للسيطرة على التجارة وضم مدناً أردنية مثل جرش وعمان؟", options: ["دولة الأنباط", "حلف الديكابولس (المدن العشرة)", "الحلف الإسلامي", "مجلس التعاون العربي"], answer: 1, explanation: "حلف الديكابولس شمل عدة مدن في الأردن للسيطرة على طرق التجارة في العهد الروماني." },
+            { q: "في أي معركة استشهد الصحابة: زيد بن حارثة، جعفر الطيار، وعبدالله بن رواحة؟", options: ["معركة اليرموك", "معركة حطين", "معركة مؤتة", "معركة عين جالوت"], answer: 2, explanation: "حدثت معركة مؤتة في جنوب الأردن عام 8 هـ واستشهد فيها القادة الثلاثة." },
+            { q: "أي من القصور التالية يُعد من القصور الأموية المنتشرة في الأردن؟", options: ["قصر الحرانة", "قصر العظم", "قصر الحمراء", "قصر المربع"], answer: 0, explanation: "قصر الحرانة هو أحد القصور التي بناها الأمويون في البادية الأردنية." },
+            { q: "متى انطلقت الثورة العربية الكبرى بقيادة الشريف حسين بن علي؟", options: ["10 حزيران 1916م", "2 تشرين الثاني 1917م", "20 تموز 1920م", "25 أيار 1946م"], answer: 0, explanation: "انطلقت الثورة في هذا التاريخ لرفض سياسة الاستبداد العثمانية." },
+            { q: "ما هي الاتفاقية التي أُبرمت عام 1916م لتقسيم الانتداب بين بريطانيا وفرنسا؟", options: ["وعد بلفور", "معاهدة وادي عربة", "اتفاقية سايكس بيكو", "المعاهدة الأردنية البريطانية"], answer: 2, explanation: "تم توقيعها سراً بين بريطانيا وفرنسا لتقسيم النفوذ في المنطقة العربية." },
+            { q: "إلى أي جزيرة نُفي الشريف حسين بن علي عام 1925م لرفضه مشاريع التقسيم ووعد بلفور؟", options: ["جزيرة صقلية", "جزيرة مالطا", "جزيرة قبرص", "جزيرة كريت"], answer: 2, explanation: "نُفي الشريف حسين إلى قبرص لثباته على مواقفه الرافضة للتنازل عن حقوق العرب." },
+            { q: "ما هو الحزب الذي قاد المعارضة السياسية الأردنية لرفض الانتداب ومعاهدة 1928؟", options: ["الحزب الشيوعي الأردني", "حزب الاستقلال", "حزب الشعب الأردني", "الحزب الوطني الاشتراكي"], answer: 2, explanation: "برز هذا الحزب كقائد للمعارضة السياسية لرفض الانتداب والمعاهدة الجائرة." },
+            { q: "من هو أول شهيد أردني ارتقى على ثرى فلسطين عام 1920م؟", options: ["كايد مفلح العبيدات", "حابس المجالي", "عبدالله التل", "موفق السلطي"], answer: 0, explanation: "كايد مفلح العبيدات هو أول شهيد أردني استشهد دفاعاً عن فلسطين عام 1920." },
+            { q: "في أي تاريخ تم إعلان (وحدة الضفتين) بين فلسطين وشرق الأردن رسمياً؟", options: ["25 أيار 1946", "24 نيسان 1950", "31 تموز 1988", "1 كانون الأول 1948"], answer: 1, explanation: "بناءً على قرارات مؤتمر أريحا، تم الإعلان الرسمي لوحدة الضفتين في 24 نيسان 1950." },
+            { q: "ما هو الإنجاز الأبرز الذي تحقق في عهد الملك طلال بن عبدالله؟", options: ["استقلال المملكة", "إصدار دستور عام 1952م", "تعريب قيادة الجيش", "إلغاء المعاهدة البريطانية"], answer: 1, explanation: "يُعد هذا الدستور من أهم إنجازات الملك طلال ورسخ الفصل بين السلطات." },
+            { q: "من هو أول قائد (أردني) للجيش العربي بعد قرار تعريب قيادته في 1 آذار 1956؟", options: ["جون كلوب باشا", "حابس المجالي", "راضي عناب", "حديثة الجازي"], answer: 2, explanation: "تم إسناد قيادة الجيش للواء راضي عناب ليكون أول قائد أردني للجيش." },
+            { q: "ما هي المعركة التي اضطرت فيها إسرائيل لأول مرة لطلب وقف إطلاق النار عام 1968؟", options: ["حرب 1967", "معركة القدس (باب الواد)", "معركة الكرامة", "حرب تشرين 1973"], answer: 2, explanation: "شكلت هذه المعركة انتصاراً أردنياً حاسماً حطم أسطورة الجيش الذي لا يقهر بقيادة حديثة الجازي." },
+            { q: "مشروع (المملكة العربية المتحدة) الذي طرحه الملك حسين 1972 كان يهدف لاستعادة أي منطقة؟", options: ["قطاع غزة", "الضفة الغربية", "الجولان", "سيناء"], answer: 1, explanation: "هدف المشروع لاستعادة الضفة الغربية وحمايتها من الأطماع الإسرائيلية وتعزيز العلاقة." },
+            { q: "أي من الدول التالية (لم) تكن عضواً في مجلس التعاون العربي المُؤسس عام 1989؟", options: ["الأردن", "العراق", "مصر", "سوريا"], answer: 3, explanation: "سوريا لم تكن جزءاً من التحالف الذي ضم (الأردن، العراق، مصر، اليمن)." },
+            { q: "أي من الأراضي التالية تم استعادتها بموجب معاهدة السلام الأردنية الإسرائيلية (وادي عربة)؟", options: ["مزارع شبعا", "الباقورة", "أم الرشراش", "صحراء النقب"], answer: 1, explanation: "تم استعادة أراضي الباقورة بموجب المعاهدة وتثبيت السيادة الأردنية عليها." },
+            { q: "متى تولى جلالة الملك عبدالله الثاني سلطاته الدستورية؟", options: ["شباط 1999", "تموز 2000", "آب 2002", "أيار 1995"], answer: 0, explanation: "تولى جلالته الحكم إثر وفاة والده الحسين في 7 شباط 1999." },
+            { q: "ما هي المبادرة التي أطلقت عام 2002 لتكريس المواطنة كمعيار للتميز؟", options: ["رسالة عمان", "هيئة شباب كلنا الأردن", "الأردن أولاً", "كلنا الأردن"], answer: 2, explanation: "مشروع الأردن أولاً كان شاملاً وهدف لتغليب المصلحة الوطنية وتكريس المواطنة." },
+            { q: "متى صدرت (رسالة عمان) التي تمثل وسطية الإسلام؟", options: ["عام 2002", "عام 2004", "عام 2006", "عام 1999"], answer: 1, explanation: "أُطلقت رسالة عمان في هذا العام كبيان عالمي يوضح حقيقة الإسلام المعتدل." },
+            { q: "في عهد أي ملك بدأ الإعمار الهاشمي (الخامس) للمسجد الأقصى؟", options: ["الملك عبدالله الأول", "الملك طلال", "الملك حسين بن طلال", "الملك عبدالله الثاني"], answer: 3, explanation: "الإعمار الخامس شمل تركيب منبر صلاح الدين في عهد الملك عبدالله الثاني." },
+            { q: "أين تم إنجاز مشروع بناء (منبر صلاح الدين الأيوبي)؟", options: ["جامعة اليرموك", "الجامعة الأردنية", "جامعة البلقاء التطبيقية (كلية الفنون الإسلامية)", "جامعة الطفيلة التقنية"], answer: 2, explanation: "أُنجز بناء المنبر الخشبي المعقد في كلية الفنون الإسلامية بجامعة البلقاء التطبيقية." },
+            { q: "من هو رئيس المجلس التشريعي الأردني وفقاً للقانون الأساسي لعام 1928؟", options: ["رئيس مجلس الأعيان", "رئيس الوزراء", "الأمير (رئيس الدولة)", "وزير الداخلية"], answer: 1, explanation: "وفقاً للنظام آنذاك، كان رئيس الوزراء هو رئيس المجلس التشريعي." },
+            { q: "ما هي السمة البارزة لدستور 1947 مقارنة بالقانون الأساسي 1928 بشأن السلطة التشريعية؟", options: ["إلغاء السلطة التشريعية", "مجلس واحد فقط", "تتكون من مجلسين (أعيان ونواب)", "تابعة للسلطة القضائية"], answer: 2, explanation: "دستور 1947 أخذ بنظام المجلسين المكون من الأعيان والنواب." },
+            { q: "بموجب الدستور، يشترط ألا يتجاوز عدد مجلس الأعيان مقارنة بمجلس النواب نسبة:", options: ["الربع", "النصف", "الثلثين", "نفس العدد"], answer: 1, explanation: "يشترط أن لا يتجاوز عدد مجلس الأعيان نصف عدد أعضاء مجلس النواب." },
+            { q: "هل يمتلك الملك صلاحية إصدار (العفو العام) لوحده دون موافقة مجلس الأمة؟", options: ["نعم، دائماً", "لا، إلا بموافقة مجلس النواب (بقانون)", "نعم بالإجازات", "الصلاحية للقضاء فقط"], answer: 1, explanation: "العفو العام يمس حقوقاً ويجب أن يمر عبر القنوات ويصدر بقانون من السلطة التشريعية." },
+            { q: "لماذا يُعد دستور عام 1952 دستوراً (جامداً)؟", options: ["لا يمكن تعديله", "تعديله يتطلب إجراءات خاصة (كأغلبية الثلثين)", "مستمد من بريطانيا", "المحكمة الدستورية ترفضه"], answer: 1, explanation: "الجمود الدستوري يعني صعوبة الإجراءات لتعديله، حيث يحتاج موافقة ثلثي أعضاء المجلسين." },
+            { q: "من مظاهر الرقابة المتبادلة بين السلطتين التشريعية والتنفيذية، حق النواب في:", options: ["إصدار قوانين مؤقتة", "اقتراح القوانين", "منح وسحب الثقة من الحكومة", "إدارة الشؤون الخارجية"], answer: 2, explanation: "سحب أو منح الثقة هو أقوى سلاح رقابي يمتلكه البرلمان تجاه الحكومة." },
+            { q: "ما هي التعديلات الدستورية البارزة التي أُقرت عام 2011م؟", options: ["إلغاء مجلس الأعيان", "إنشاء المحكمة الدستورية وهيئة مستقلة للانتخاب", "تحويل النظام لجمهوري", "تخفيض سن الانتخاب لـ 16"], answer: 1, explanation: "هذه من أهم مخرجات تعديلات 2011 لتعزيز الشفافية وحماية الدستور." },
+            { q: "أين كان المنطلق الأول للحرب التي قادها المماليك للانتصار في معركة عين جالوت؟", options: ["من الأردن", "من بغداد", "من مكة المكرمة", "من إسطنبول"], answer: 0, explanation: "كان الأردن القاعدة التي انطلق منها المماليك لتحقيق النصر وصد الغزو المغولي." },
+            { q: "ما هي المعاهدة التي ساهمت في بروز المعارضة السياسية وتأسيس حزب الشعب الأردني؟", options: ["معاهدة وادي عربة", "المعاهدة الأردنية البريطانية عام 1928", "اتفاقية التضامن العربي", "مؤتمر مدريد"], answer: 1, explanation: "أثارت المعاهدة حفيظة الوطنيين الأردنيين لتكريسها الانتداب، مما أدى لظهور المعارضة." },
+            { q: "من هو صاحب مقولة: 'إن الديمقراطية في جوهرها عملية حية نمارسها جميعاً مواطنين ودولة'؟", options: ["الملك طلال", "الشريف حسين", "الملك عبدالله الثاني", "الملك حسين بن طلال"], answer: 2, explanation: "وردت هذه المقولة في الأوراق النقاشية لجلالة الملك عبدالله الثاني لتعزيز مفهوم الديمقراطية." }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedAnswer = null;
+
+        // DOM Elements
+        const screens = {
+            start: document.getElementById('start-screen'),
+            quiz: document.getElementById('quiz-screen'),
+            result: document.getElementById('result-screen')
+        };
+        const elements = {
+            progressBar: document.getElementById('progress-bar'),
+            counter: document.getElementById('question-counter'),
+            scoreDisplay: document.getElementById('score-display'),
+            questionText: document.getElementById('question-text'),
+            optionsContainer: document.getElementById('options-container'),
+            nextBtn: document.getElementById('next-btn'),
+            explanationBox: document.getElementById('explanation-box'),
+            explanationText: document.getElementById('explanation-text'),
+            finalScore: document.getElementById('final-score'),
+            resultMessage: document.getElementById('result-message'),
+            resultIcon: document.getElementById('result-icon')
+        };
+
+        function switchScreen(screenName) {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            screens[screenName].classList.remove('hidden');
+        }
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            updateScoreDisplay();
+            switchScreen('quiz');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            
+            // Update Progress & Text
+            elements.counter.innerText = `السؤال ${currentQuestionIndex + 1} من ${questions.length}`;
+            elements.progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+            elements.questionText.innerText = q.q;
+            
+            // Reset state
+            elements.explanationBox.classList.add('hidden');
+            elements.nextBtn.classList.add('hidden');
+            elements.optionsContainer.innerHTML = '';
+            selectedAnswer = null;
+
+            // Render Options
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-right p-4 border-2 border-gray-200 rounded-xl font-medium text-gray-700 bg-white hover:bg-indigo-50 hover:border-indigo-200 focus:outline-none";
+                
+                // Content with radio circle style
+                btn.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 rounded-full border-2 border-gray-300 ml-3 flex-shrink-0 option-circle"></div>
+                        <span>${opt}</span>
+                    </div>
+                `;
+                
+                btn.onclick = () => handleSelection(btn, index);
+                elements.optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleSelection(selectedBtn, selectedIndex) {
+            if (selectedAnswer !== null) return; // Prevent multiple clicks
+            selectedAnswer = selectedIndex;
+            
+            const q = questions[currentQuestionIndex];
+            const isCorrect = selectedIndex === q.answer;
+            const buttons = elements.optionsContainer.children;
+
+            if (isCorrect) score++;
+            updateScoreDisplay();
+
+            // Style buttons based on correctness
+            Array.from(buttons).forEach((btn, index) => {
+                btn.classList.add('disabled-option');
+                btn.disabled = true;
+                const circle = btn.querySelector('.option-circle');
+
+                if (index === q.answer) {
+                    btn.classList.remove('disabled-option', 'border-gray-200');
+                    btn.classList.add('correct-answer');
+                    circle.classList.replace('border-gray-300', 'border-emerald-500');
+                    circle.classList.add('bg-emerald-500');
+                    circle.innerHTML = `<svg class="w-full h-full text-white p-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
+                } else if (index === selectedIndex && !isCorrect) {
+                    btn.classList.remove('disabled-option', 'border-gray-200');
+                    btn.classList.add('wrong-answer');
+                    circle.classList.replace('border-gray-300', 'border-red-500');
+                    circle.classList.add('bg-red-500');
+                    circle.innerHTML = `<svg class="w-full h-full text-white p-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                }
+            });
+
+            // Show explanation
+            elements.explanationBox.className = `mt-6 p-4 rounded-xl border-r-4 ${isCorrect ? 'bg-emerald-50 border-emerald-500 text-emerald-800' : 'bg-red-50 border-red-500 text-red-800'}`;
+            elements.explanationBox.classList.remove('hidden');
+            
+            const statusIcon = isCorrect ? '✔️' : '❌';
+            elements.explanationText.innerHTML = `<strong>${statusIcon} ${isCorrect ? 'إجابة صحيحة!' : 'إجابة خاطئة.'}</strong> <br> ${q.explanation}`;
+
+            // Show Next Button
+            elements.nextBtn.innerText = currentQuestionIndex === questions.length - 1 ? 'إنهاء الاختبار' : 'السؤال التالي';
+            elements.nextBtn.classList.remove('hidden');
+        }
+
+        function updateScoreDisplay() {
+            elements.scoreDisplay.innerText = `النقاط: ${score}`;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            elements.progressBar.style.width = '100%';
+            switchScreen('result');
+            
+            elements.finalScore.innerText = score;
+            
+            const percentage = (score / questions.length) * 100;
+            let msg = "";
+            let iconSvg = "";
+            
+            if (percentage >= 90) {
+                msg = "ممتاز جداً! أنت مستعد تماماً لاجتياز الامتحان الفعلي.";
+                iconSvg = `<svg class="w-20 h-20 text-yellow-500 mx-auto" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 01.832.445l2.42 3.63 4.29.624a1 1 0 01.554 1.705l-3.104 3.025.733 4.275a1 1 0 01-1.45 1.054L10 15.115l-3.834 2.015a1 1 0 01-1.45-1.054l.733-4.275-3.104-3.025a1 1 0 01.554-1.705l4.29-.624 2.42-3.63A1 1 0 0110 2z" clip-rule="evenodd"></path></svg>`;
+            } else if (percentage >= 75) {
+                msg = "عمل رائع! معلوماتك جيدة جداً، استمر في المراجعة لضمان العلامة الكاملة.";
+                iconSvg = `<svg class="w-20 h-20 text-blue-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path></svg>`;
+            } else if (percentage >= 50) {
+                msg = "جيد، ولكنك بحاجة لبعض المراجعة الإضافية للمفاهيم الأساسية.";
+                iconSvg = `<svg class="w-20 h-20 text-orange-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            } else {
+                msg = "يجب عليك مراجعة الملخص بتركيز أكبر والمحاولة مرة أخرى.";
+                iconSvg = `<svg class="w-20 h-20 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            }
+
+            elements.resultMessage.innerText = msg;
+            elements.resultIcon.innerHTML = iconSvg;
+        }
+
+        function restartQuiz() {
+            startQuiz();
+        }
+    </script>
+</body>
+</html>
+
+```
